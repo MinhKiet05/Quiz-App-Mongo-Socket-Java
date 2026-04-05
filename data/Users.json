@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "12345678",
+    "username": "Trần Huỳnh Minh Kiệt",
+    "password": "12345678",
+    "role": "LECTURER",
+    "status": "ACTIVE"
+  },
+  {
+    "_id": "23696901",
+    "username": "Trần Huỳnh Minh Kiệt",
+    "password": "12345678",
+    "role": "CANDIDATE",
+    "status": "ACTIVE"
+  },
+  {
+    "_id": "23679011",
+    "username": "Nguyễn Huy Hoàng",
+    "password": "12345678",
+    "role": "CANDIDATE",
+    "status": "ACTIVE"
+  },
+  {
+    "_id": "23697291",
+    "username": "Đinh Tấn Khiêm",
+    "password": "12345678",
+    "role": "CANDIDATE",
+    "status": "ACTIVE"
+  }
+]

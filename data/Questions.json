@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "Q_1001",
+    "subject_id": "SUB001",
+    "content": "Socket trong Java thuộc package nào?",
+    "options": ["java.io", "java.net", "java.util", "java.rmi"],
+    "correct_answer": "java.net",
+    "difficulty": "Medium",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1002",
+    "subject_id": "SUB001",
+    "content": "RMI trong Java là viết tắt của từ gì?",
+    "options": ["Remote Method Invocation", "Random Memory Interface", "Remote Machine Interface", "Rapid Method Invocation"],
+    "correct_answer": "Remote Method Invocation",
+    "difficulty": "Easy",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1003",
+    "subject_id": "SUB001",
+    "content": "Đâu KHÔNG phải là một mô hình cơ sở dữ liệu NoSQL phổ biến?",
+    "options": ["Document-based", "Key-Value", "Relational (Quan hệ)", "Graph-based"],
+    "correct_answer": "Relational (Quan hệ)",
+    "difficulty": "Easy",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1004",
+    "subject_id": "SUB001",
+    "content": "Giao thức nào cung cấp kết nối tin cậy (reliable) và có thứ tự trong lập trình Socket?",
+    "options": ["UDP", "TCP", "IP", "ICMP"],
+    "correct_answer": "TCP",
+    "difficulty": "Medium",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1005",
+    "subject_id": "SUB001",
+    "content": "Cổng (port) mặc định của RMI Registry là bao nhiêu?",
+    "options": ["1099", "8080", "1521", "3306"],
+    "correct_answer": "1099",
+    "difficulty": "Medium",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1006",
+    "subject_id": "SUB001",
+    "content": "Để một đối tượng có thể truyền qua mạng trong RMI, lớp của nó phải implement interface nào?",
+    "options": ["Runnable", "Serializable", "Cloneable", "Remote"],
+    "correct_answer": "Serializable",
+    "difficulty": "Hard",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1007",
+    "subject_id": "SUB001",
+    "content": "Lớp nào sau đây được sử dụng để tạo Server lắng nghe kết nối TCP từ Client trong Java?",
+    "options": ["Socket", "DatagramSocket", "ServerSocket", "ClientSocket"],
+    "correct_answer": "ServerSocket",
+    "difficulty": "Easy",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1008",
+    "subject_id": "SUB001",
+    "content": "MongoDB (một CSDL NoSQL) lưu trữ dữ liệu nội bộ dưới định dạng nào?",
+    "options": ["XML", "BSON (Binary JSON)", "CSV", "Raw Text"],
+    "correct_answer": "BSON (Binary JSON)",
+    "difficulty": "Medium",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1009",
+    "subject_id": "SUB001",
+    "content": "Trong RMI, lớp nào thường được kế thừa để triển khai một Remote object?",
+    "options": ["RemoteObject", "UnicastRemoteObject", "RemoteServer", "RMIObject"],
+    "correct_answer": "UnicastRemoteObject",
+    "difficulty": "Hard",
+    "created_by": "12345678"
+  },
+  {
+    "_id": "Q_1010",
+    "subject_id": "SUB001",
+    "content": "Đâu là một đặc điểm chính của hệ thống phân tán?",
+    "options": ["Chỉ có một điểm lỗi duy nhất (Single point of failure)", "Chia sẻ chung bộ nhớ vật lý (Shared memory)", "Các thành phần chạy trên nhiều máy tính và giao tiếp qua mạng", "Toàn bộ hệ thống chạy trên một quy trình (process) duy nhất"],
+    "correct_answer": "Các thành phần chạy trên nhiều máy tính và giao tiếp qua mạng",
+    "difficulty": "Medium",
+    "created_by": "12345678"
+  }
+]

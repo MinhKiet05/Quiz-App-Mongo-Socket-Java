@@ -1,0 +1,15 @@
+{
+  "_id": "sub_999",
+  "quiz_id": "quiz_001",
+  "candidate_id": "23696901",
+  "start_time": "2026-04-10T08:05:00Z",
+  "submit_time": "2026-04-10T08:45:00Z",
+  "score": 8.5,
+  "details": [
+    {
+      "question_id": "Q_1001",
+      "selected_option": "java.net",
+      "is_correct": true
+    }
+  ]
+}
