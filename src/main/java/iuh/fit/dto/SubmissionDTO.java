@@ -47,6 +47,15 @@ public class SubmissionDTO implements Serializable {
         private String selectedOption;
 
         @JsonProperty("is_correct")
-        private boolean isCorrect;
+        private boolean correct;
+        
+        // Alias methods for compatibility
+        public boolean isCorrect() {
+            return correct;
+        }
+        
+        public void setCorrect(boolean correct) {
+            this.correct = correct;
+        }
     }
 }
