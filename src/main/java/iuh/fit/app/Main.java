@@ -1,7 +1,21 @@
-package main.java.iuh.fit.app;
+package iuh.fit.app;
 
-public class Main {
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+/**
+ * Main class - Điểm khởi động ứng dụng JavaFX
+ * Khởi động TestLauncher
+ */
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) {
+        TestLauncher launcher = new TestLauncher();
+        launcher.start(primaryStage);
+    }
+
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        launch(args);
     }
 }

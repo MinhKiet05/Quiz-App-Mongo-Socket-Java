@@ -1,0 +1,348 @@
+/* Quiz Application JavaFX Stylesheet */
+
+/* Root styling */
+.root {
+    -fx-font-family: "Arial";
+    -fx-font-size: 12px;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #333333;
+}
+
+.title-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #666666;
+}
+
+/* Buttons */
+.button {
+    -fx-padding: 8px 20px;
+    -fx-font-size: 12px;
+    -fx-border-radius: 5px;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-opacity: 0.9;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.button:pressed {
+    -fx-opacity: 0.8;
+}
+
+.primary-button {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.secondary-button {
+    -fx-background-color: #95a5a6;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.success-button {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.danger-button {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.info-button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Text Fields */
+.text-field {
+    -fx-padding: 10px;
+    -fx-border-radius: 5;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-font-size: 12px;
+}
+
+.text-field:focused {
+    -fx-border-color: #667eea;
+    -fx-border-width: 2;
+}
+
+/* Password Fields */
+.password-field {
+    -fx-padding: 10px;
+    -fx-border-radius: 5;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1;
+    -fx-font-size: 12px;
+}
+
+.password-field:focused {
+    -fx-border-color: #667eea;
+    -fx-border-width: 2;
+}
+
+/* Radio Buttons */
+.radio-button {
+    -fx-text-fill: #333333;
+    -fx-font-size: 12px;
+}
+
+.radio-button:hover {
+    -fx-text-fill: #667eea;
+}
+
+/* Checkboxes */
+.check-box {
+    -fx-text-fill: #666666;
+    -fx-font-size: 11px;
+}
+
+/* Progress Bar */
+.progress-bar {
+    -fx-accent: #667eea;
+    -fx-control-inner-background: #f0f0f0;
+}
+
+/* Separators */
+.separator {
+    -fx-border-color: #e0e0e0;
+}
+
+/* List Views */
+.list-view {
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+    -fx-control-inner-background: white;
+}
+
+.list-cell {
+    -fx-padding: 5;
+    -fx-border-color: transparent;
+}
+
+.list-cell:hover {
+    -fx-background-color: #f5f5f5;
+}
+
+.list-cell:selected {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+}
+
+/* Scroll Panes */
+.scroll-pane {
+    -fx-background: transparent;
+    -fx-control-inner-background: transparent;
+}
+
+.scroll-bar {
+    -fx-block-increment: 20;
+    -fx-unit-increment: 2;
+}
+
+.scroll-bar:vertical {
+    -fx-pref-width: 8;
+}
+
+.scroll-bar:horizontal {
+    -fx-pref-height: 8;
+}
+
+/* Alert Dialogs */
+.alert {
+    -fx-padding: 20;
+}
+
+.alert .title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.alert .content {
+    -fx-font-size: 12px;
+}
+
+/* Cards / Containers */
+.card {
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-padding: 15;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+.feature-box {
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-padding: 20;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+/* Status Labels */
+.status-success {
+    -fx-text-fill: #27ae60;
+    -fx-font-weight: bold;
+}
+
+.status-error {
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+}
+
+.status-warning {
+    -fx-text-fill: #f39c12;
+    -fx-font-weight: bold;
+}
+
+.status-info {
+    -fx-text-fill: #3498db;
+    -fx-font-weight: bold;
+}
+
+/* Header Styles */
+.header {
+    -fx-background-color: #667eea;
+    -fx-padding: 15;
+    -fx-text-fill: white;
+}
+
+.header-text {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+}
+
+/* Question Container */
+.question-container {
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-padding: 20;
+    -fx-background-color: white;
+}
+
+.question-text {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-wrap-text: true;
+}
+
+.option-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #333333;
+    -fx-padding: 8;
+}
+
+/* Score Display */
+.score-display {
+    -fx-padding: 30;
+    -fx-background-color: #f8f9fa;
+    -fx-border-radius: 5;
+    -fx-alignment: center;
+}
+
+.score-value {
+    -fx-font-weight: bold;
+    -fx-font-size: 72px;
+    -fx-text-fill: #667eea;
+}
+
+.score-pass {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: #27ae60;
+}
+
+.score-fail {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: #e74c3c;
+}
+
+/* Stats Row */
+.stats-row {
+    -fx-padding: 10;
+    -fx-border-color: transparent;
+    -fx-background-color: #f9f9f9;
+}
+
+.stats-label {
+    -fx-text-fill: #666666;
+    -fx-font-size: 12px;
+    -fx-min-width: 100;
+}
+
+.stats-value {
+    -fx-text-fill: #333333;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Timer */
+.timer-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.timer-warning {
+    -fx-text-fill: #f39c12;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.timer-critical {
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        -fx-opacity: 0;
+        -fx-translate-y: 20;
+    }
+    to {
+        -fx-opacity: 1;
+        -fx-translate-y: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        -fx-opacity: 0;
+    }
+    to {
+        -fx-opacity: 1;
+    }
+}
+
+/* Tooltips */
+.tooltip {
+    -fx-font-size: 11px;
+    -fx-text-fill: #333333;
+    -fx-background-color: #fffacd;
+    -fx-border-color: #e0e0e0;
+}
+
