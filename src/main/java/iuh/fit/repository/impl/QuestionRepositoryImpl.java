@@ -17,7 +17,7 @@ public class QuestionRepositoryImpl implements IQuestionRepository {
         // Lấy collection "Questions" và tự động map kết quả về class Question
         this.collection = MongoDbConnection.getInstance()
                 .getDatabase()
-                .getCollection("Questions", Question.class);
+                .getCollection("questions", Question.class);
     }
 
     @Override

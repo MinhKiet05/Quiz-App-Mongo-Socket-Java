@@ -1,4 +1,4 @@
-{
+[{
   "_id": "sub_999",
   "quiz_id": "quiz_001",
   "candidate_id": "23696901",
@@ -12,4 +12,4 @@
       "is_correct": true
     }
   ]
-}
+}]

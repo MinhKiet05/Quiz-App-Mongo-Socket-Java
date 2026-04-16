@@ -12,7 +12,7 @@ public class SubmissionRepositoryImpl implements ISubmissionRepository {
 
     public SubmissionRepositoryImpl() {
         this.collection = MongoDbConnection.getInstance()
-                .getDatabase().getCollection("Submissions", Submission.class);
+                .getDatabase().getCollection("submissions", Submission.class);
     }
 
     @Override

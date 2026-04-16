@@ -11,7 +11,7 @@ public class UserRepositoryImpl implements IUserRepository {
 
     public UserRepositoryImpl() {
         this.collection = MongoDbConnection.getInstance()
-                .getDatabase().getCollection("Users", User.class);
+                .getDatabase().getCollection("users", User.class);
     }
 
     @Override

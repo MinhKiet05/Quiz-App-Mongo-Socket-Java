@@ -11,7 +11,7 @@ public class QuizRepositoryImpl implements IQuizRepository {
 
     public QuizRepositoryImpl() {
         this.collection = MongoDbConnection.getInstance()
-                .getDatabase().getCollection("Quizzes", Quiz.class);
+                .getDatabase().getCollection("quizzes", Quiz.class);
     }
 
     @Override
