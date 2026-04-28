@@ -5,6 +5,7 @@ import com.mongodb.client.model.Filters;
 import iuh.fit.db.MongoDbConnection;
 import iuh.fit.entity.Quiz;
 import iuh.fit.repository.IQuizRepository;
+import java.util.List;
 
 public class QuizRepositoryImpl implements IQuizRepository {
     private final MongoCollection<Quiz> collection;
@@ -17,5 +18,10 @@ public class QuizRepositoryImpl implements IQuizRepository {
     @Override
     public Quiz findById(String id) {
         return collection.find(Filters.eq("_id", id)).first();
+    }
+
+    @Override
+    public List<Quiz> findAll() {
+        return collection.find().into(new java.util.ArrayList<>());
     }
 }

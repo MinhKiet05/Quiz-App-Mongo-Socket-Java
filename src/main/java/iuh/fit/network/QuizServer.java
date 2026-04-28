@@ -17,6 +17,7 @@ import iuh.fit.service.impl.UserServiceImpl;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.EOFException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -24,30 +25,50 @@ import java.util.concurrent.Executors;
 
 public class QuizServer {
     public static void main(String[] args) {
-        // Mở port 9999 và tạo pool 20 threads (chịu tải 20 thí sinh cùng lúc)
-        try (ServerSocket serverSocket = new ServerSocket(9999);
-             ExecutorService pool = Executors.newFixedThreadPool(20)) {
+        try {
+            // Kiểm tra kết nối MongoDB trước
+            System.out.println("[Server] Đang kết nối tới MongoDB tại localhost:27017...");
+            try {
+                iuh.fit.db.MongoDbConnection.getInstance().getDatabase();
+                System.out.println("[Server] ✓ MongoDB kết nối thành công!");
+            } catch (Exception e) {
+                System.err.println("[Server] ✗ Lỗi kết nối MongoDB: " + e.getMessage());
+                System.err.println("[Server] Hãy kiểm tra:");
+                System.err.println("  1. MongoDB service đã chạy chưa?");
+                System.err.println("  2. MongoDB listening trên port 27017?");
+                System.err.println("  3. Database 'QuizAppDB' có tồn tại không?");
+                throw e;
+            }
 
-            System.out.println("Quiz Server is running on port 9999...");
+            // Mở port 9999 và tạo pool 20 threads
+            ServerSocket serverSocket = new ServerSocket(9999);
+            java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(20);
+
+            System.out.println("[Server] Quiz Server is running on port 9999...");
+            System.out.println("[Server] Waiting for client connections...");
 
             while (true) {
-                Socket socket = serverSocket.accept();
-                System.out.println("Client connected: " + socket.getRemoteSocketAddress());
+                try {
+                    java.net.Socket socket = serverSocket.accept();
+                    System.out.println("[Server] ✓ Client connected: " + socket.getRemoteSocketAddress());
 
-                // Đẩy kết nối vào pool xử lý
-                QuizRequestHandler handler = new QuizRequestHandler(socket);
-                pool.submit(handler);
+                    QuizRequestHandler handler = new QuizRequestHandler(socket);
+                    pool.submit(handler);
+                } catch (Exception e) {
+                    System.err.println("[Server] Error accepting client: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
+            System.err.println("[Server] ✗ FATAL: Server failed to start");
             e.printStackTrace();
+            System.exit(1);
         }
     }
 }
 
 class QuizRequestHandler implements Runnable {
     private Socket socket;
-
-    // Khai báo các service cốt lõi
     private IUserService userService;
     private IQuizService quizService;
     private ISubmissionService submissionService;
@@ -55,16 +76,26 @@ class QuizRequestHandler implements Runnable {
     public QuizRequestHandler(Socket socket) {
         this.socket = socket;
 
-        // Khởi tạo các Repository MongoDB
-        UserRepositoryImpl userRepo = new UserRepositoryImpl();
-        QuizRepositoryImpl quizRepo = new QuizRepositoryImpl();
-        QuestionRepositoryImpl questionRepo = new QuestionRepositoryImpl();
-        SubmissionRepositoryImpl submissionRepo = new SubmissionRepositoryImpl();
+        try {
+            // Khởi tạo các Repository MongoDB
+            UserRepositoryImpl userRepo = new UserRepositoryImpl();
+            QuizRepositoryImpl quizRepo = new QuizRepositoryImpl();
+            QuestionRepositoryImpl questionRepo = new QuestionRepositoryImpl();
+            SubmissionRepositoryImpl submissionRepo = new SubmissionRepositoryImpl();
 
-        // Tiêm (Inject) Repository vào Service
-        this.userService = new UserServiceImpl(userRepo);
-        this.quizService = new QuizServiceImpl(quizRepo, questionRepo);
-        this.submissionService = new SubmissionServiceImpl(submissionRepo, this.quizService);
+            // Tiêm (Inject) Repository vào Service
+            this.userService = new UserServiceImpl(userRepo);
+            this.quizService = new QuizServiceImpl(quizRepo, questionRepo);
+            this.submissionService = new SubmissionServiceImpl(submissionRepo, this.quizService);
+            
+            System.out.println("[Handler] ✓ Services initialized for client: " + socket.getRemoteSocketAddress());
+        } catch (Exception e) {
+            System.err.println("[Handler] ✗ Failed to initialize services: " + e.getMessage());
+            e.printStackTrace();
+            try {
+                socket.close();
+            } catch (Exception ignored) {}
+        }
     }
 
     @Override
@@ -73,18 +104,37 @@ class QuizRequestHandler implements Runnable {
         try (ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
              ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
 
+            System.out.println("[Handler] ✓ I/O streams initialized for " + socket.getRemoteSocketAddress());
+
             while (true) {
-                Object obj = in.readObject();
-                if (obj == null) break;
+                try {
+                    Object obj = in.readObject();
+                    if (obj == null) break;
 
-                Request request = (Request) obj;
-                Response response = processRequest(request);
+                    Request request = (Request) obj;
+                    System.out.println("[Handler] Received request: " + request.getCommandType() + " from " + socket.getRemoteSocketAddress());
+                    
+                    Response response = processRequest(request);
 
-                out.writeObject(response);
-                out.flush();
+                    out.writeObject(response);
+                    out.flush();
+                    System.out.println("[Handler] ✓ Response sent for " + request.getCommandType());
+                } catch (EOFException e) {
+                    System.out.println("[Handler] Client disconnected normally: " + socket.getRemoteSocketAddress());
+                    break;
+                } catch (Exception e) {
+                    System.err.println("[Handler] Error processing request: " + e.getMessage());
+                    e.printStackTrace();
+                    break;
+                }
             }
         } catch (Exception e) {
-            System.out.println("Client disconnected.");
+            System.err.println("[Handler] I/O Error: " + e.getMessage());
+        } finally {
+            try {
+                socket.close();
+                System.out.println("[Handler] Socket closed for " + socket.getRemoteSocketAddress());
+            } catch (Exception ignored) {}
         }
     }
 
@@ -96,6 +146,10 @@ class QuizRequestHandler implements Runnable {
                     String[] credentials = (String[]) request.getObject();
                     UserDTO user = userService.login(credentials[0], credentials[1]);
                     return Response.builder().success(true).data(user).message("Đăng nhập thành công").build();
+                }
+                case GET_ALL_QUIZZES -> {
+                    java.util.List<iuh.fit.dto.QuizDTO> quizzes = quizService.getAllQuizzes();
+                    return Response.builder().success(true).data(quizzes).message("Tải danh sách đề thi thành công").build();
                 }
                 case GET_QUIZ_BY_ID -> {
                     // Yêu cầu Client gửi quizId (String)

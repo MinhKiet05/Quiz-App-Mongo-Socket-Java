@@ -1,60 +1,85 @@
-[
-  {
-    "_id": "quiz_001",
-    "subject_id": "SUB001",
-    "title": "Thi thử Lập trình mạng (Socket)",
-    "duration_minutes": 15,
-    "open_time": "2026-04-06T00:00:00Z",
-    "close_time": "2026-04-07T23:59:59Z",
-    "status": "PUBLISHED",
-    "created_by": "12345678",
-    "question_ids": ["Q_1001", "Q_1004", "Q_1007"]
-  },
-  {
-    "_id": "quiz_002",
-    "subject_id": "SUB001",
-    "title": "Bài tập trắc nghiệm RMI",
-    "duration_minutes": 20,
-    "open_time": "2026-04-08T08:00:00Z",
-    "close_time": "2026-04-09T17:00:00Z",
-    "status": "PUBLISHED",
-    "created_by": "12345678",
-    "question_ids": ["Q_1002", "Q_1005", "Q_1006", "Q_1009"]
-  },
-  {
-    "_id": "quiz_003",
-    "subject_id": "SUB001",
-    "title": "Kiểm tra cơ sở dữ liệu NoSQL",
-    "duration_minutes": 10,
-    "open_time": "2026-04-12T00:00:00Z",
-    "close_time": "2026-12-31T23:59:59Z",
-    "status": "DRAFT",
-    "created_by": "12345678",
-    "question_ids": ["Q_1003", "Q_1008"]
-  },
-  {
-    "_id": "quiz_004",
-    "subject_id": "SUB001",
-    "title": "Thi giữa kỳ - Lập trình phân tán",
-    "duration_minutes": 45,
-    "open_time": "2026-04-15T07:00:00Z",
-    "close_time": "2026-04-15T09:00:00Z",
-    "status": "PUBLISHED",
-    "created_by": "12345678",
-    "question_ids": ["Q_1001", "Q_1002", "Q_1003", "Q_1004", "Q_1007", "Q_1010"]
-  },
-  {
-    "_id": "quiz_005",
-    "subject_id": "SUB001",
-    "title": "Thi cuối kỳ - Lập trình phân tán với Java",
-    "duration_minutes": 60,
-    "open_time": "2026-05-20T08:00:00Z",
-    "close_time": "2026-05-20T10:00:00Z",
-    "status": "PUBLISHED",
-    "created_by": "12345678",
-    "question_ids": [
-      "Q_1001", "Q_1002", "Q_1003", "Q_1004", "Q_1005",
-      "Q_1006", "Q_1007", "Q_1008", "Q_1009", "Q_1010"
-    ]
-  }
-]
+[{
+  "_id": "quiz_003",
+  "subject_id": "SUB001",
+  "title": "Kiểm tra cơ sở dữ liệu NoSQL",
+  "duration_minutes": 10,
+  "open_time": "2026-04-12T00:00:00Z",
+  "close_time": "2026-12-31T23:59:59Z",
+  "status": "PUBLISHED",
+  "created_by": "12345678",
+  "question_ids": [
+    "Q_1003",
+    "Q_1008"
+  ]
+},
+{
+  "_id": "quiz_005",
+  "subject_id": "SUB001",
+  "title": "Thi cuối kỳ - Lập trình phân tán với Java",
+  "duration_minutes": 60,
+  "open_time": "2026-04-20T08:00:00Z",
+  "close_time": "2026-06-20T10:00:00Z",
+  "status": "PUBLISHED",
+  "created_by": "12345678",
+  "question_ids": [
+    "Q_1001",
+    "Q_1002",
+    "Q_1003",
+    "Q_1004",
+    "Q_1005",
+    "Q_1006",
+    "Q_1007",
+    "Q_1008",
+    "Q_1009",
+    "Q_1010"
+  ]
+},
+{
+  "_id": "quiz_004",
+  "subject_id": "SUB001",
+  "title": "Thi giữa kỳ - Lập trình phân tán với Java",
+  "duration_minutes": 45,
+  "open_time": "2026-04-15T07:00:00Z",
+  "close_time": "2026-06-15T09:00:00Z",
+  "status": "PUBLISHED",
+  "created_by": "12345678",
+  "question_ids": [
+    "Q_1001",
+    "Q_1002",
+    "Q_1003",
+    "Q_1004",
+    "Q_1007",
+    "Q_1010"
+  ]
+},
+{
+  "_id": "quiz_002",
+  "subject_id": "SUB001",
+  "title": "Bài tập trắc nghiệm RMI",
+  "duration_minutes": 20,
+  "open_time": "2026-04-08T08:00:00Z",
+  "close_time": "2026-06-09T17:00:00Z",
+  "status": "PUBLISHED",
+  "created_by": "12345678",
+  "question_ids": [
+    "Q_1002",
+    "Q_1005",
+    "Q_1006",
+    "Q_1009"
+  ]
+},
+{
+  "_id": "quiz_001",
+  "subject_id": "SUB001",
+  "title": "Thi thử Lập trình mạng (Socket)",
+  "duration_minutes": 15,
+  "open_time": "2026-04-06T00:00:00Z",
+  "close_time": "2026-06-07T23:59:59Z",
+  "status": "PUBLISHED",
+  "created_by": "12345678",
+  "question_ids": [
+    "Q_1001",
+    "Q_1004",
+    "Q_1007"
+  ]
+}]

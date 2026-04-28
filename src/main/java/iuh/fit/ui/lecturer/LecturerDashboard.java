@@ -11,6 +11,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.stage.Screen;
+import javafx.geometry.Rectangle2D;
 
 public class LecturerDashboard {
     private Stage primaryStage;
@@ -32,9 +34,15 @@ public class LecturerDashboard {
         VBox centerLayout = createCenterLayout();
         rootLayout.setCenter(centerLayout);
 
-        Scene scene = new Scene(rootLayout, 900, 700);
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        Scene scene = new Scene(rootLayout, bounds.getWidth(), bounds.getHeight());
         primaryStage.setTitle("Quiz App - Bảng điều khiển giảng viên");
         primaryStage.setScene(scene);
+        primaryStage.setWidth(bounds.getWidth());
+        primaryStage.setHeight(bounds.getHeight());
+        primaryStage.setX(bounds.getMinX());
+        primaryStage.setY(bounds.getMinY());
         primaryStage.show();
     }
 
