@@ -1,7 +1,10 @@
 package iuh.fit.ui.candidate;
 
+import iuh.fit.dto.QuestionDTO;
 import iuh.fit.dto.QuizDTO;
 import iuh.fit.dto.SubmissionDTO;
+import iuh.fit.network.QuizClientService;
+import iuh.fit.ui.shared.SessionManager;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -15,6 +18,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.stage.Screen;
+import javafx.geometry.Rectangle2D;
+
+import java.time.Instant;
 import java.util.*;
 
 public class ExamForm {
@@ -27,7 +34,8 @@ public class ExamForm {
     private VBox questionContainer;
     private Button previousButton, nextButton;
     private int timeRemaining;
-    private List<String> questions = new ArrayList<>();
+    private List<QuestionDTO> questions = new ArrayList<>();
+    private Timeline timerTimeline;
 
     public static void show(Stage primaryStage, QuizDTO quiz) {
         ExamForm form = new ExamForm();
@@ -38,10 +46,8 @@ public class ExamForm {
         this.primaryStage = stage;
         this.quiz = quiz;
         this.timeRemaining = quiz.getDurationMinutes() * 60;
-        
-        for (int i = 0; i < quiz.getQuestionIds().size(); i++) {
-            questions.add("Câu hỏi " + (i + 1));
-        }
+
+        loadQuizFromServer(quiz.getId()); // Load quiz details từ server
 
         BorderPane rootLayout = new BorderPane();
         rootLayout.setStyle("-fx-background-color: #f5f5f5;");
@@ -55,15 +61,52 @@ public class ExamForm {
         HBox footer = createFooter();
         rootLayout.setBottom(footer);
 
-        Scene scene = new Scene(rootLayout, 1000, 700);
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        Scene scene = new Scene(rootLayout, bounds.getWidth(), bounds.getHeight());
         primaryStage.setTitle("Quiz App - Làm bài thi: " + quiz.getTitle());
         primaryStage.setScene(scene);
+        primaryStage.setWidth(bounds.getWidth());
+        primaryStage.setHeight(bounds.getHeight());
+        primaryStage.setX(bounds.getMinX());
+        primaryStage.setY(bounds.getMinY());
         primaryStage.show();
 
-        displayQuestion(0);
         startTimer();
     }
 
+    private void loadQuizFromServer(String quizId) {
+        new Thread(() -> {
+            try {
+                QuizClientService client = QuizClientService.getInstance();
+                QuizDTO fullQuiz = client.getQuizById(quizId);
+                
+                Platform.runLater(() -> {
+                    this.quiz = fullQuiz;
+                    this.questions = fullQuiz.getQuestions() != null ? fullQuiz.getQuestions() : new ArrayList<>();
+                    
+                    if (questions.isEmpty()) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.setTitle("Lỗi");
+                        alert.setHeaderText("Không có câu hỏi");
+                        alert.setContentText("Đề thi này không có câu hỏi.");
+                        alert.showAndWait();
+                        return;
+                    }
+                    
+                    displayQuestion(0);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Lỗi");
+                    alert.setHeaderText("Không thể tải đề thi");
+                    alert.setContentText(e.getMessage());
+                    alert.showAndWait();
+                });
+            }
+        }).start();
+    }
     private HBox createHeader() {
         HBox header = new HBox(20);
         header.setStyle("-fx-background-color: #667eea; -fx-padding: 15;");
@@ -149,7 +192,9 @@ public class ExamForm {
 
         questionContainer.getChildren().clear();
 
-        Label questionLabel = new Label((index + 1) + ". " + questions.get(index));
+        QuestionDTO question = questions.get(index);
+
+        Label questionLabel = new Label((index + 1) + ". " + question.getContent());
         questionLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         questionLabel.setTextFill(Color.web("#333333"));
         questionLabel.setWrapText(true);
@@ -158,16 +203,16 @@ public class ExamForm {
         optionsBox.setPadding(new Insets(15, 0, 0, 0));
 
         ToggleGroup toggleGroup = new ToggleGroup();
-        String[] options = {"Đáp án A", "Đáp án B", "Đáp án C", "Đáp án D"};
-        String selectedAnswer = answers.get(index);
+        String previousAnswer = answers.get(index); // Lấy đáp án đã chọn trước đó
 
-        for (String option : options) {
+        for (String option : question.getOptions()) {
             RadioButton radioButton = new RadioButton(option);
             radioButton.setToggleGroup(toggleGroup);
             radioButton.setStyle("-fx-font-size: 12;");
             radioButton.setFont(Font.font("Arial", 12));
 
-            if (option.equals(selectedAnswer)) {
+            // Nếu đáp án này trùng với đáp án đã chọn trước đó, hãy chọn nó
+            if (option.equals(previousAnswer)) {
                 radioButton.setSelected(true);
             }
 
@@ -210,35 +255,63 @@ public class ExamForm {
         confirmAlert.setContentText("Bạn có chắc chắn muốn nộp bài?");
 
         if (confirmAlert.showAndWait().get() == ButtonType.OK) {
-            // Tính điểm (placeholder)
-            int correctCount = 0;
-            for (String ans : answers.values()) {
-                if (ans != null && ans.startsWith("Đáp án A")) {
-                    correctCount++;
-                }
+            // Dừng timer
+            if (timerTimeline != null) {
+                timerTimeline.stop();
             }
-            double score = (correctCount * 10.0) / questions.size();
 
+            // Tạo SubmissionDTO với details
             SubmissionDTO submission = new SubmissionDTO();
             submission.setQuizId(quiz.getId());
-            submission.setScore(score);
+            submission.setCandidateId(SessionManager.getInstance().getCurrentUser().getId());
+            submission.setStartTime(Instant.now().toString());
+            submission.setSubmitTime(Instant.now().toString());
+            
+            // Tạo danh sách details từ answers
+            List<SubmissionDTO.SubmissionDetailDTO> details = new ArrayList<>();
+            for (int i = 0; i < questions.size(); i++) {
+                SubmissionDTO.SubmissionDetailDTO detail = new SubmissionDTO.SubmissionDetailDTO();
+                detail.setQuestionId(questions.get(i).getId());
+                detail.setSelectedOption(answers.getOrDefault(i, "")); // Lấy đáp án đã chọn
+                details.add(detail);
+            }
+            submission.setDetails(details);
 
-            ResultForm.show(primaryStage, submission, score);
+            // Gửi submission tới server
+            new Thread(() -> {
+                try {
+                    QuizClientService client = QuizClientService.getInstance();
+                    SubmissionDTO gradedSubmission = client.submitQuiz(submission);
+
+                    Platform.runLater(() -> {
+                        ResultForm.show(primaryStage, gradedSubmission, gradedSubmission.getScore());
+                    });
+                } catch (Exception e) {
+                    Platform.runLater(() -> {
+                        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                        errorAlert.setTitle("Lỗi");
+                        errorAlert.setHeaderText("Lỗi nộp bài");
+                        errorAlert.setContentText(e.getMessage());
+                        errorAlert.showAndWait();
+                    });
+                }
+            }).start();
         }
     }
 
     private void startTimer() {
-        Timeline timeline = new Timeline(
+        timerTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(1), e -> {
                     timeRemaining--;
                     updateTimerLabel();
                     if (timeRemaining <= 0) {
+                        timerTimeline.stop();
                         submitExam();
                     }
                 })
         );
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        timerTimeline.setCycleCount(Timeline.INDEFINITE);
+        timerTimeline.play();
     }
 
     private void updateTimerLabel() {

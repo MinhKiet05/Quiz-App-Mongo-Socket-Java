@@ -28,12 +28,12 @@ public class QuizServiceImpl implements IQuizService {
         Instant closeTime = Instant.parse(quiz.getCloseTime());
 
         if (now.isBefore(openTime)) {
-            throw new RuntimeException("Đề thi chưa đến giờ mở!");
+            throw new RuntimeException("Đề thi chưa đến giờ mở! Mở lúc: " + openTime);
         }
         if (now.isAfter(closeTime)) {
-            throw new RuntimeException("Đề thi đã kết thúc!");
+            throw new RuntimeException("Đề thi đã kết thúc! Đóng lúc: " + closeTime);
         }
-        if (!"PUBLISHED".equals(quiz.getStatus())) {
+        if (!"PUBLISHED".equals(quiz.getStatus()) && !"DRAFT".equals(quiz.getStatus())) {
             throw new RuntimeException("Đề thi chưa được công bố!");
         }
 
@@ -41,6 +41,27 @@ public class QuizServiceImpl implements IQuizService {
         // Copy danh sách ID câu hỏi để không ảnh hưởng dữ liệu gốc
         java.util.List<String> shuffledQuestionIds = new java.util.ArrayList<>(quiz.getQuestionIds());
         Collections.shuffle(shuffledQuestionIds);
+
+        // 3. Load QuestionDTOs từ questionIds từ MongoDB
+        java.util.List<iuh.fit.dto.QuestionDTO> questions = new java.util.ArrayList<>();
+        for (String questionId : shuffledQuestionIds) {
+            Question question = questionRepository.findById(questionId);
+            if (question != null) {
+                questions.add(iuh.fit.dto.QuestionDTO.builder()
+                        .id(question.getId())
+                        .subjectId(question.getSubjectId())
+                        .content(question.getContent())
+                        .options(question.getOptions())
+                        .difficulty(question.getDifficulty())
+                        .build());
+            } else {
+                System.err.println("[Service] Question not found: " + questionId);
+            }
+        }
+
+        if (questions.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy câu hỏi cho đề thi này!");
+        }
 
         // Map sang DTO để gửi cho Client
         return QuizDTO.builder()
@@ -52,7 +73,40 @@ public class QuizServiceImpl implements IQuizService {
                 .closeTime(quiz.getCloseTime())
                 .status(quiz.getStatus())
                 .questionIds(shuffledQuestionIds) // Gửi danh sách đã xáo trộn
+                .questions(questions) // Gửi đầy đủ QuestionDTOs từ MongoDB
                 .build();
+    }
+
+    @Override
+    public java.util.List<QuizDTO> getAllQuizzes() {
+        java.util.List<iuh.fit.entity.Quiz> quizzes = quizRepository.findAll();
+        java.util.List<QuizDTO> dtos = new java.util.ArrayList<>();
+        
+        for (iuh.fit.entity.Quiz quiz : quizzes) {
+            // Lấy tất cả các quizzes (bỏ filter status để hiển thị cả PUBLISHED và DRAFT)
+            // Chỉ lấy những quizzes có thời gian mở hợp lệ
+            try {
+                java.time.Instant now = java.time.Instant.now();
+                java.time.Instant closeTime = java.time.Instant.parse(quiz.getCloseTime());
+                
+                // Chỉ hiển thị nếu chưa qua thời gian đóng
+                if (now.isBefore(closeTime)) {
+                    dtos.add(QuizDTO.builder()
+                            .id(quiz.getId())
+                            .subjectId(quiz.getSubjectId())
+                            .title(quiz.getTitle())
+                            .durationMinutes(quiz.getDurationMinutes())
+                            .openTime(quiz.getOpenTime())
+                            .closeTime(quiz.getCloseTime())
+                            .status(quiz.getStatus())
+                            .questionIds(new java.util.ArrayList<>(quiz.getQuestionIds()))
+                            .build());
+                }
+            } catch (Exception e) {
+                System.err.println("[Service] Error parsing quiz times for " + quiz.getId() + ": " + e.getMessage());
+            }
+        }
+        return dtos;
     }
 
     @Override

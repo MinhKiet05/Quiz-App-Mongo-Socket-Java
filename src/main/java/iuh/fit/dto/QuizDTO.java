@@ -36,4 +36,6 @@ public class QuizDTO implements Serializable {
 
     @JsonProperty("question_ids")
     private List<String> questionIds;
+
+    private List<QuestionDTO> questions;
 }
