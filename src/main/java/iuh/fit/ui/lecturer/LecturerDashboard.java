@@ -112,7 +112,7 @@ public class LecturerDashboard {
         Button actionButton = new Button("Truy cập");
         actionButton.setStyle("-fx-font-size: 12; -fx-padding: 10 20; -fx-background-color: #667eea; -fx-text-fill: white; -fx-border-radius: 5;");
         actionButton.setFont(Font.font("Arial", FontWeight.BOLD, 12));
-        actionButton.setOnAction(e -> showInfo("Chức năng này sẽ được phát triển trong phiên bản tiếp theo"));
+        actionButton.setOnAction(e -> QuestionBankForm.show(primaryStage));
 
         box.getChildren().addAll(titleLabel, descLabel, actionButton);
         return box;

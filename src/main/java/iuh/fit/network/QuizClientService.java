@@ -170,6 +170,96 @@ public class QuizClientService {
     }
 
     /**
+     * Thêm câu hỏi mới
+     */
+    public void addQuestion(QuestionDTO questionDTO) throws Exception {
+        System.out.println("[Client] === ADDING QUESTION ===");
+        System.out.println("[Client] ID: " + questionDTO.getId());
+        System.out.println("[Client] Content: " + questionDTO.getContent());
+        System.out.println("[Client] SubjectId: " + questionDTO.getSubjectId());
+        System.out.println("[Client] CreatedBy: " + questionDTO.getCreatedBy());
+        System.out.println("[Client] Difficulty: " + questionDTO.getDifficulty());
+        System.out.println("[Client] CorrectAnswer: " + questionDTO.getCorrectAnswer());
+        System.out.println("[Client] Options: " + questionDTO.getOptions());
+        System.out.println("[Client] Sending to server...");
+        
+        Request request = Request.builder()
+                .commandType(CommandType.ADD_QUESTION)
+                .object(questionDTO)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        System.out.println("[Client] ✓ Question added successfully");
+    }
+
+    /**
+     * Cập nhật câu hỏi
+     */
+    public void updateQuestion(QuestionDTO questionDTO) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.UPDATE_QUESTION)
+                .object(questionDTO)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    /**
+     * Xóa câu hỏi
+     */
+    public void deleteQuestion(String questionId) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.DELETE_QUESTION)
+                .object(questionId)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    /**
+     * Lấy danh sách câu hỏi theo môn học
+     */
+    @SuppressWarnings("unchecked")
+    public List<QuestionDTO> getQuestionsBySubject(String subjectId) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.GET_QUESTIONS_BY_SUBJECT)
+                .object(subjectId)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (List<QuestionDTO>) response.getData();
+    }
+
+    /**
+     * Tất cả môn học
+     */
+    @SuppressWarnings("unchecked")
+    public List<SubjectDTO> getAllSubjects() throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.GET_ALL_SUBJECTS)
+                .object(null)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (List<SubjectDTO>) response.getData();
+    }
+
+    /**
      * Kiểm tra xem đã kết nối hay chưa
      */
     public boolean isConnected() {

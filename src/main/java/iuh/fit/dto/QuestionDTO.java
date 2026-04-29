@@ -24,4 +24,8 @@ public class QuestionDTO implements Serializable {
     private String content;
     private List<String> options;
     private String difficulty;
+    private String correctAnswer;
+
+    @JsonProperty("created_by")
+    private String createdBy;
 }
