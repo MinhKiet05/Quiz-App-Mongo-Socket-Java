@@ -17,127 +17,130 @@ public class QuestionServiceImpl implements IQuestionService {
     private final IQuestionRepository questionRepository;
 
     @Override
+    public void addQuestion(QuestionDTO questionDTO) {
+        System.out.println("[QuestionService] === RECEIVED ADD_QUESTION REQUEST ===");
+        System.out.println("[QuestionService] DTO ID: " + questionDTO.getId());
+        System.out.println("[QuestionService] DTO SubjectId: " + questionDTO.getSubjectId());
+        System.out.println("[QuestionService] DTO CreatedBy: " + questionDTO.getCreatedBy());
+        System.out.println("[QuestionService] DTO Content: " + questionDTO.getContent());
+        System.out.println("[QuestionService] DTO Difficulty: " + questionDTO.getDifficulty());
+        System.out.println("[QuestionService] DTO CorrectAnswer: " + questionDTO.getCorrectAnswer());
+        
+        // 1. Validate dữ liệu đầu vào
+        if (questionDTO.getContent() == null || questionDTO.getContent().trim().isEmpty()) {
+            throw new RuntimeException("Nội dung câu hỏi không được để trống");
+        }
+
+        if (questionDTO.getOptions() == null || questionDTO.getOptions().isEmpty()) {
+            throw new RuntimeException("Phải có ít nhất một lựa chọn");
+        }
+
+        if (questionDTO.getCorrectAnswer() == null || questionDTO.getCorrectAnswer().trim().isEmpty()) {
+            throw new RuntimeException("Đáp án đúng không được để trống");
+        }
+
+        // 2. Tạo ID nếu chưa có
+        if (questionDTO.getId() == null || questionDTO.getId().trim().isEmpty()) {
+            questionDTO.setId(UUID.randomUUID().toString());
+        }
+
+        // 3. Chuyển đổi DTO sang Entity - MANUAL MAPPING để đảm bảo tất cả fields được copy
+        Question question = new Question();
+        question.setId(questionDTO.getId());
+        question.setContent(questionDTO.getContent());
+        question.setOptions(questionDTO.getOptions());
+        question.setDifficulty(questionDTO.getDifficulty());
+        question.setCorrectAnswer(questionDTO.getCorrectAnswer());
+        question.setSubjectId(questionDTO.getSubjectId());  // ✅ Manual set subjectId
+        question.setCreatedBy(questionDTO.getCreatedBy());   // ✅ Manual set createdBy
+        
+        System.out.println("[QuestionService] === AFTER MAPPING TO ENTITY ===");
+        System.out.println("[QuestionService] Entity ID: " + question.getId());
+        System.out.println("[QuestionService] Entity SubjectId: " + question.getSubjectId());
+        System.out.println("[QuestionService] Entity CreatedBy: " + question.getCreatedBy());
+        System.out.println("[QuestionService] Entity Content: " + question.getContent());
+        System.out.println("[QuestionService] Entity Difficulty: " + question.getDifficulty());
+        System.out.println("[QuestionService] Entity CorrectAnswer: " + question.getCorrectAnswer());
+        System.out.println("[QuestionService] Entity Options: " + question.getOptions());
+
+        // 4. Lưu vào MongoDB thông qua Repository
+        questionRepository.add(question);
+
+        System.out.println("[QuestionService] ✅ Question saved to MongoDB: " + question.getId());
+    }
+
+    @Override
+    public void updateQuestion(QuestionDTO questionDTO) {
+        // 1. Validate ID
+        if (questionDTO.getId() == null || questionDTO.getId().trim().isEmpty()) {
+            throw new RuntimeException("ID câu hỏi không được để trống");
+        }
+
+        // 2. Lấy câu hỏi hiện tại từ Database
+        Question existingQuestion = questionRepository.findById(questionDTO.getId());
+        if (existingQuestion == null) {
+            throw new RuntimeException("Không tìm thấy câu hỏi với ID: " + questionDTO.getId());
+        }
+
+        // 3. Cập nhật các trường từ DTO (giữ lại trường chưa thay đổi)
+        if (questionDTO.getContent() != null && !questionDTO.getContent().trim().isEmpty()) {
+            existingQuestion.setContent(questionDTO.getContent());
+        }
+
+        if (questionDTO.getOptions() != null && !questionDTO.getOptions().isEmpty()) {
+            existingQuestion.setOptions(questionDTO.getOptions());
+        }
+
+        if (questionDTO.getDifficulty() != null && !questionDTO.getDifficulty().trim().isEmpty()) {
+            existingQuestion.setDifficulty(questionDTO.getDifficulty());
+        }
+
+        if (questionDTO.getCorrectAnswer() != null && !questionDTO.getCorrectAnswer().trim().isEmpty()) {
+            existingQuestion.setCorrectAnswer(questionDTO.getCorrectAnswer());
+        }
+
+        // Chỉ cập nhật subjectId & createdBy nếu DTO cung cấp giá trị hợp lệ
+        if (questionDTO.getSubjectId() != null && !questionDTO.getSubjectId().trim().isEmpty()) {
+            existingQuestion.setSubjectId(questionDTO.getSubjectId());
+            System.out.println("[QuestionService] Cập nhật subjectId: " + questionDTO.getSubjectId());
+        }
+
+        if (questionDTO.getCreatedBy() != null && !questionDTO.getCreatedBy().trim().isEmpty()) {
+            existingQuestion.setCreatedBy(questionDTO.getCreatedBy());
+            System.out.println("[QuestionService] Cập nhật createdBy: " + questionDTO.getCreatedBy());
+        }
+
+        // 4. Lưu lại vào MongoDB
+        questionRepository.update(existingQuestion);
+
+        System.out.println("[QuestionService] ✅ Cập nhật câu hỏi: " + existingQuestion.getId());
+    }
+
+    @Override
+    public void deleteQuestion(String questionId) {
+        // 1. Validate ID
+        if (questionId == null || questionId.trim().isEmpty()) {
+            throw new RuntimeException("ID câu hỏi không được để trống");
+        }
+
+        // 2. Kiểm tra câu hỏi có tồn tại
+        Question question = questionRepository.findById(questionId);
+        if (question == null) {
+            throw new RuntimeException("Không tìm thấy câu hỏi với ID: " + questionId);
+        }
+
+        // 3. Xóa từ MongoDB
+        questionRepository.deleteById(questionId);
+
+        System.out.println("[QuestionService] ✅ Xóa câu hỏi: " + questionId);
+    }
+
+    @Override
     public List<QuestionDTO> findBySubjectId(String subjectId) {
         // 1. Gọi xuống tầng Repository để lấy dữ liệu Entity từ MongoDB
         List<Question> questions = questionRepository.findBySubjectId(subjectId);
 
         // 2. Sử dụng DataMapper để chuyển đổi List<Question> sang List<QuestionDTO>
-        return DataMapper.mapList(questions, QuestionDTO.class);
-    }
-
-    @Override
-    public QuestionDTO getById(String id) {
-        // 1. Gọi Repository để lấy câu hỏi từ MongoDB
-        Question question = questionRepository.findById(id);
-
-        if (question == null) {
-            throw new RuntimeException("Không tìm thấy câu hỏi với ID: " + id);
-        }
-
-        // 2. Chuyển đổi Entity sang DTO
-        return DataMapper.map(question, QuestionDTO.class);
-    }
-
-    @Override
-    public void addQuestion(QuestionDTO questionDTO) {
-        // Validation
-        if (questionDTO == null || questionDTO.getContent() == null || questionDTO.getContent().isEmpty()) {
-            throw new RuntimeException("Nội dung câu hỏi không được để trống!");
-        }
-
-        if (questionDTO.getOptions() == null || questionDTO.getOptions().size() == 0) {
-            throw new RuntimeException("Câu hỏi phải có ít nhất 1 đáp án!");
-        }
-
-        if (questionDTO.getCorrectAnswer() == null || questionDTO.getCorrectAnswer().isEmpty()) {
-            throw new RuntimeException("Phải chọn đáp án đúng!");
-        }
-
-        // 1. Tạo ID tự động nếu chưa có
-        if (questionDTO.getId() == null || questionDTO.getId().isEmpty()) {
-            questionDTO.setId(UUID.randomUUID().toString());
-        }
-
-        // 2. Chuyển đổi DTO sang Entity
-        Question question = DataMapper.map(questionDTO, Question.class);
-
-        // 3. Lưu vào MongoDB thông qua Repository
-        questionRepository.add(question);
-    }
-
-    @Override
-    public void updateQuestion(QuestionDTO questionDTO) {
-        // Validation
-        if (questionDTO == null || questionDTO.getId() == null || questionDTO.getId().isEmpty()) {
-            throw new RuntimeException("ID câu hỏi không được để trống!");
-        }
-
-        if (questionDTO.getContent() == null || questionDTO.getContent().isEmpty()) {
-            throw new RuntimeException("Nội dung câu hỏi không được để trống!");
-        }
-
-        if (questionDTO.getOptions() == null || questionDTO.getOptions().size() == 0) {
-            throw new RuntimeException("Câu hỏi phải có ít nhất 1 đáp án!");
-        }
-
-        if (questionDTO.getCorrectAnswer() == null || questionDTO.getCorrectAnswer().isEmpty()) {
-            throw new RuntimeException("Phải chọn đáp án đúng!");
-        }
-
-        // 1. Kiểm tra xem câu hỏi có tồn tại không
-        Question existingQuestion = questionRepository.findById(questionDTO.getId());
-        if (existingQuestion == null) {
-            throw new RuntimeException("Không tìm thấy câu hỏi để cập nhật!");
-        }
-
-        // 2. Cập nhật các trường cho phép thay đổi từ DTO
-        existingQuestion.setContent(questionDTO.getContent());
-        existingQuestion.setOptions(questionDTO.getOptions());
-        existingQuestion.setDifficulty(questionDTO.getDifficulty());
-        existingQuestion.setCorrectAnswer(questionDTO.getCorrectAnswer());
-        
-        // Nếu DTO có subjectId, cập nhật; nếu không, giữ lại giá trị cũ
-        if (questionDTO.getSubjectId() != null && !questionDTO.getSubjectId().isEmpty()) {
-            existingQuestion.setSubjectId(questionDTO.getSubjectId());
-        }
-        
-        // Nếu DTO có createdBy, cập nhật; nếu không, giữ lại giá trị cũ
-        if (questionDTO.getCreatedBy() != null && !questionDTO.getCreatedBy().isEmpty()) {
-            existingQuestion.setCreatedBy(questionDTO.getCreatedBy());
-        }
-
-        // 3. Cập nhật vào MongoDB
-        questionRepository.update(existingQuestion);
-    }
-
-    @Override
-    public void deleteQuestion(String id) {
-        // Validation
-        if (id == null || id.isEmpty()) {
-            throw new RuntimeException("ID câu hỏi không được để trống!");
-        }
-
-        // 1. Kiểm tra xem câu hỏi có tồn tại không
-        Question question = questionRepository.findById(id);
-        if (question == null) {
-            throw new RuntimeException("Không tìm thấy câu hỏi để xóa!");
-        }
-
-        // 2. Xóa từ MongoDB
-        questionRepository.deleteById(id);
-    }
-
-    @Override
-    public List<QuestionDTO> searchQuestions(String keyword) {
-        // Validation
-        if (keyword == null || keyword.isEmpty()) {
-            throw new RuntimeException("Từ khóa tìm kiếm không được để trống!");
-        }
-
-        // 1. Tìm kiếm câu hỏi từ Repository
-        List<Question> questions = questionRepository.searchByContent(keyword);
-
-        // 2. Chuyển đổi sang DTO
         return DataMapper.mapList(questions, QuestionDTO.class);
     }
 
@@ -151,24 +154,22 @@ public class QuestionServiceImpl implements IQuestionService {
     }
 
     @Override
-    public void deleteQuestionsBySubject(String subjectId) {
-        // Validation
-        if (subjectId == null || subjectId.isEmpty()) {
-            throw new RuntimeException("ID môn học không được để trống!");
-        }
+    public List<QuestionDTO> searchByContent(String keyword) {
+        // 1. Lấy kết quả tìm kiếm từ Repository
+        List<Question> questions = questionRepository.searchByContent(keyword);
 
-        // Xóa tất cả câu hỏi của môn học từ MongoDB
-        questionRepository.deleteBySubjectId(subjectId);
+        // 2. Chuyển đổi sang DTO
+        return DataMapper.mapList(questions, QuestionDTO.class);
     }
 
     @Override
-    public long getQuestionCountBySubject(String subjectId) {
-        // Validation
-        if (subjectId == null || subjectId.isEmpty()) {
-            throw new RuntimeException("ID môn học không được để trống!");
-        }
+    public void deleteBySubjectId(String subjectId) {
+        questionRepository.deleteBySubjectId(subjectId);
+        System.out.println("[QuestionService] ✅ Xóa tất cả câu hỏi của môn: " + subjectId);
+    }
 
-        // Đếm số câu hỏi của môn học từ Repository
+    @Override
+    public long countBySubjectId(String subjectId) {
         return questionRepository.countBySubjectId(subjectId);
     }
 }
