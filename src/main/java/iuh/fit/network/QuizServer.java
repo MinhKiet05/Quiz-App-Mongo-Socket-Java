@@ -72,6 +72,8 @@ class QuizRequestHandler implements Runnable {
     private IUserService userService;
     private IQuizService quizService;
     private ISubmissionService submissionService;
+    private iuh.fit.service.IQuestionService questionService;
+    private iuh.fit.service.ISubjectService subjectService;
 
     public QuizRequestHandler(Socket socket) {
         this.socket = socket;
@@ -82,11 +84,14 @@ class QuizRequestHandler implements Runnable {
             QuizRepositoryImpl quizRepo = new QuizRepositoryImpl();
             QuestionRepositoryImpl questionRepo = new QuestionRepositoryImpl();
             SubmissionRepositoryImpl submissionRepo = new SubmissionRepositoryImpl();
+            iuh.fit.repository.impl.SubjectRepositoryImpl subjectRepo = new iuh.fit.repository.impl.SubjectRepositoryImpl();
 
             // Tiêm (Inject) Repository vào Service
             this.userService = new UserServiceImpl(userRepo);
             this.quizService = new QuizServiceImpl(quizRepo, questionRepo);
             this.submissionService = new SubmissionServiceImpl(submissionRepo, this.quizService);
+            this.questionService = new iuh.fit.service.impl.QuestionServiceImpl(questionRepo);
+            this.subjectService = new iuh.fit.service.impl.SubjectServiceImpl(subjectRepo);
             
             System.out.println("[Handler] ✓ Services initialized for client: " + socket.getRemoteSocketAddress());
         } catch (Exception e) {
@@ -169,6 +174,61 @@ class QuizRequestHandler implements Runnable {
                     userService.changePassword(passwordData[0], passwordData[1], passwordData[2]);
                     return Response.builder().success(true).message("Đổi mật khẩu thành công").build();
                 }
+                
+                // ============ Quản lý Câu hỏi ============
+                case ADD_QUESTION -> {
+                    // Yêu cầu Client gửi QuestionDTO
+                    iuh.fit.dto.QuestionDTO questionDTO = (iuh.fit.dto.QuestionDTO) request.getObject();
+                    questionService.addQuestion(questionDTO);
+                    return Response.builder().success(true).message("Thêm câu hỏi thành công").build();
+                }
+                case UPDATE_QUESTION -> {
+                    // Yêu cầu Client gửi QuestionDTO
+                    iuh.fit.dto.QuestionDTO questionDTO = (iuh.fit.dto.QuestionDTO) request.getObject();
+                    questionService.updateQuestion(questionDTO);
+                    return Response.builder().success(true).message("Cập nhật câu hỏi thành công").build();
+                }
+                case DELETE_QUESTION -> {
+                    // Yêu cầu Client gửi questionId (String)
+                    String questionId = (String) request.getObject();
+                    questionService.deleteQuestion(questionId);
+                    return Response.builder().success(true).message("Xóa câu hỏi thành công").build();
+                }
+                case GET_QUESTIONS_BY_SUBJECT -> {
+                    // Yêu cầu Client gửi subjectId (String)
+                    String subjectId = (String) request.getObject();
+                    java.util.List<iuh.fit.dto.QuestionDTO> questions = questionService.findBySubjectId(subjectId);
+                    return Response.builder().success(true).data(questions).message("Tải danh sách câu hỏi thành công").build();
+                }
+                case SEARCH_QUESTIONS -> {
+                    // Yêu cầu Client gửi keyword (String)
+                    String keyword = (String) request.getObject();
+                    java.util.List<iuh.fit.dto.QuestionDTO> questions = questionService.searchQuestions(keyword);
+                    return Response.builder().success(true).data(questions).message("Tìm kiếm câu hỏi thành công").build();
+                }
+                case GET_ALL_QUESTIONS -> {
+                    java.util.List<iuh.fit.dto.QuestionDTO> questions = questionService.getAllQuestions();
+                    return Response.builder().success(true).data(questions).message("Tải tất cả câu hỏi thành công").build();
+                }
+                case DELETE_QUESTIONS_BY_SUBJECT -> {
+                    // Yêu cầu Client gửi subjectId (String)
+                    String subjectId = (String) request.getObject();
+                    questionService.deleteQuestionsBySubject(subjectId);
+                    return Response.builder().success(true).message("Xóa tất cả câu hỏi của môn học thành công").build();
+                }
+                case GET_QUESTION_COUNT_BY_SUBJECT -> {
+                    // Yêu cầu Client gửi subjectId (String)
+                    String subjectId = (String) request.getObject();
+                    long count = questionService.getQuestionCountBySubject(subjectId);
+                    return Response.builder().success(true).data(count).message("Đếm câu hỏi thành công").build();
+                }
+                
+                // ============ Quản lý Môn học ============
+                case GET_ALL_SUBJECTS -> {
+                    java.util.List<iuh.fit.dto.SubjectDTO> subjects = subjectService.getAllSubjects();
+                    return Response.builder().success(true).data(subjects).message("Tải danh sách môn học thành công").build();
+                }
+                
                 default -> {
                     return Response.builder().success(false).message("Lệnh không hợp lệ!").build();
                 }

@@ -170,6 +170,154 @@ public class QuizClientService {
     }
 
     /**
+     * ============ Quản lý Câu hỏi (Question Management) ============
+     */
+
+    /**
+     * Thêm câu hỏi mới
+     */
+    public void addQuestion(QuestionDTO questionDTO) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.ADD_QUESTION)
+                .object(questionDTO)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    /**
+     * Cập nhật câu hỏi
+     */
+    public void updateQuestion(QuestionDTO questionDTO) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.UPDATE_QUESTION)
+                .object(questionDTO)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    /**
+     * Xóa câu hỏi theo ID
+     */
+    public void deleteQuestion(String questionId) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.DELETE_QUESTION)
+                .object(questionId)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    /**
+     * Lấy danh sách câu hỏi theo môn học
+     */
+    @SuppressWarnings("unchecked")
+    public List<QuestionDTO> getQuestionsBySubject(String subjectId) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.GET_QUESTIONS_BY_SUBJECT)
+                .object(subjectId)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (List<QuestionDTO>) response.getData();
+    }
+
+    /**
+     * Tìm kiếm câu hỏi theo nội dung
+     */
+    @SuppressWarnings("unchecked")
+    public List<QuestionDTO> searchQuestions(String keyword) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.SEARCH_QUESTIONS)
+                .object(keyword)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (List<QuestionDTO>) response.getData();
+    }
+
+    /**
+     * Lấy tất cả câu hỏi
+     */
+    @SuppressWarnings("unchecked")
+    public List<QuestionDTO> getAllQuestions() throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.GET_ALL_QUESTIONS)
+                .object(null)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (List<QuestionDTO>) response.getData();
+    }
+
+    /**
+     * Xóa tất cả câu hỏi của một môn học
+     */
+    public void deleteQuestionsBySubject(String subjectId) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.DELETE_QUESTIONS_BY_SUBJECT)
+                .object(subjectId)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    /**
+     * Đếm số câu hỏi của một môn học
+     */
+    public long getQuestionCountBySubject(String subjectId) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.GET_QUESTION_COUNT_BY_SUBJECT)
+                .object(subjectId)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (Long) response.getData();
+    }
+
+    /**
+     * Lấy tất cả môn học
+     */
+    @SuppressWarnings("unchecked")
+    public List<SubjectDTO> getAllSubjects() throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.GET_ALL_SUBJECTS)
+                .object(null)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (List<SubjectDTO>) response.getData();
+    }
+
+    /**
      * Kiểm tra xem đã kết nối hay chưa
      */
     public boolean isConnected() {

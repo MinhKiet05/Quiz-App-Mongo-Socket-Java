@@ -1,6 +1,6 @@
-{
+[{
   "_id": "SUB001",
   "name": "Lập trình phân tán với Java",
   "course_code": "2101558",
   "description": "Học phần về Socket, RMI và NoSQL"
-}
+}]
