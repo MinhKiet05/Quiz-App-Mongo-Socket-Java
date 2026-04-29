@@ -9,4 +9,13 @@ public interface ISubjectRepository {
 
     // Lấy chi tiết một môn học theo ID
     Subject findById(String id);
+
+    // Thêm môn học mới
+    void add(Subject subject);
+
+    // Cập nhật môn học
+    void update(Subject subject);
+
+    // Xóa môn học theo ID
+    void deleteById(String id);
 }

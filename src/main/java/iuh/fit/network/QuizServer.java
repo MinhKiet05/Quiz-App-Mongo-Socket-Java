@@ -228,7 +228,22 @@ class QuizRequestHandler implements Runnable {
                     java.util.List<iuh.fit.dto.SubjectDTO> subjects = subjectService.getAllSubjects();
                     return Response.builder().success(true).data(subjects).message("Tải danh sách môn học thành công").build();
                 }
-                
+                case ADD_SUBJECT -> {
+                    iuh.fit.dto.SubjectDTO subjectDTO = (iuh.fit.dto.SubjectDTO) request.getObject();
+                    subjectService.addSubject(subjectDTO);
+                    return Response.builder().success(true).message("Thêm môn học thành công").build();
+                }
+                case UPDATE_SUBJECT -> {
+                    iuh.fit.dto.SubjectDTO subjectDTO = (iuh.fit.dto.SubjectDTO) request.getObject();
+                    subjectService.updateSubject(subjectDTO);
+                    return Response.builder().success(true).message("Cập nhật môn học thành công").build();
+                }
+                case DELETE_SUBJECT -> {
+                    String subjectId = (String) request.getObject();
+                    subjectService.deleteSubject(subjectId);
+                    return Response.builder().success(true).message("Xóa môn học thành công").build();
+                }
+
                 default -> {
                     return Response.builder().success(false).message("Lệnh không hợp lệ!").build();
                 }

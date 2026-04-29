@@ -556,7 +556,25 @@ public class QuestionBankForm {
         }).start();
     }
 
-    private void showInfo(String title, String message) {
+private String mapDifficultyToVietnamese(String difficulty) {
+    if (difficulty == null) return "Trung bình";
+    return switch (difficulty.trim().toLowerCase()) {
+        case "easy" -> "Dễ";
+        case "medium" -> "Trung bình";
+        case "hard" -> "Khó";
+        default -> difficulty;
+    };
+}
+
+private String mapDifficultyToEnglish(String difficulty) {
+    if (difficulty == null) return "Medium";
+    return switch (difficulty.trim().toLowerCase()) {
+        case "dễ" -> "Easy";
+        case "trung bình" -> "Medium";
+        case "khó" -> "Hard";
+        default -> difficulty;
+    };
+}    private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
