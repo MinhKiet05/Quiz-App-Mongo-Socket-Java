@@ -1,5 +1,12 @@
 [
   {
+    "_id": "12312312",
+    "username": "Nguyễn Tấn Tài",
+    "password": "12345678",
+    "role": "MANAGER",
+    "status": "ACTIVE"
+  },
+  {
     "_id": "12345678",
     "username": "Nguyễn Thị Hoàng Khánh",
     "password": "12345678",
