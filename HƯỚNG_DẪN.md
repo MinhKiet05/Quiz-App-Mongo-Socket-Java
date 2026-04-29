@@ -49,6 +49,7 @@ mongod
 mongoimport --db QuizAppDB --collection users --file data/Users.json --jsonArray
 mongoimport --db QuizAppDB --collection quizzes --file data/Quizzes.json --jsonArray
 mongoimport --db QuizAppDB --collection questions --file data/Questions.json --jsonArray
+mongoimport --db QuizAppDB --collection subjects --file data/Subjects.json --jsonArray
 mongoimport --db QuizAppDB --collection submissions --file data/Submissions.json --jsonArray
 ```
 
