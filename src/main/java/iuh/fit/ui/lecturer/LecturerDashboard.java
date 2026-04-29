@@ -88,24 +88,9 @@ public class LecturerDashboard {
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 22));
         titleLabel.setTextFill(Color.web("#333333"));
 
-        GridPane gridPane = new GridPane();
-        gridPane.setHgap(20);
-        gridPane.setVgap(20);
-        gridPane.setAlignment(Pos.TOP_CENTER);
+        VBox featureBox = createFeatureBox("📚 Quản lý ngân hàng câu hỏi", "Quản lý các câu hỏi theo từng môn học");
 
-        VBox featureBox1 = createFeatureBox("📝 Tạo đề thi", "Tạo đề thi mới cho sinh viên");
-        gridPane.add(featureBox1, 0, 0);
-
-        VBox featureBox2 = createFeatureBox("⚙️ Quản lý đề thi", "Chỉnh sửa và xóa đề thi");
-        gridPane.add(featureBox2, 1, 0);
-
-        VBox featureBox3 = createFeatureBox("📊 Xem kết quả", "Xem điểm và kết quả sinh viên");
-        gridPane.add(featureBox3, 0, 1);
-
-        VBox featureBox4 = createFeatureBox("📈 Thống kê", "Xem thống kê chi tiết");
-        gridPane.add(featureBox4, 1, 1);
-
-        centerLayout.getChildren().addAll(titleLabel, gridPane);
+        centerLayout.getChildren().addAll(titleLabel, featureBox);
         return centerLayout;
     }
 

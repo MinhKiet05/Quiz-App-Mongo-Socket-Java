@@ -4,6 +4,7 @@ import iuh.fit.dto.UserDTO;
 import iuh.fit.network.QuizClientService;
 import iuh.fit.ui.candidate.CandidateDashboard;
 import iuh.fit.ui.lecturer.LecturerDashboard;
+import iuh.fit.ui.manager.ManagerDashboard;
 import iuh.fit.ui.shared.SessionManager;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -170,6 +171,8 @@ public class LoginForm {
                         LecturerDashboard.show(primaryStage);
                     } else if ("CANDIDATE".equalsIgnoreCase(userDTO.getRole())) {
                         CandidateDashboard.show(primaryStage);
+                    } else if ("MANAGER".equalsIgnoreCase(userDTO.getRole())) {
+                        ManagerDashboard.show(primaryStage);
                     }
                 });
 
