@@ -23,4 +23,10 @@ public class UserRepositoryImpl implements IUserRepository {
                 Filters.eq("status", "ACTIVE")
         )).first();
     }
+
+    @Override
+    public void update(User user) {
+        // Replace the existing user document with the new one
+        collection.replaceOne(Filters.eq("_id", user.getId()), user);
+    }
 }

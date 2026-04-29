@@ -154,6 +154,22 @@ public class QuizClientService {
     }
 
     /**
+     * Đổi mật khẩu
+     */
+    public boolean changePassword(String userId, String oldPassword, String newPassword) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.CHANGE_PASSWORD)
+                .object(new String[]{userId, oldPassword, newPassword})
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return true;
+    }
+
+    /**
      * Kiểm tra xem đã kết nối hay chưa
      */
     public boolean isConnected() {

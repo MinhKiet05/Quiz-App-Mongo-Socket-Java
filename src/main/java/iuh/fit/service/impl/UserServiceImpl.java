@@ -27,4 +27,18 @@ public class UserServiceImpl implements IUserService {
                 .status(user.getStatus())
                 .build();
     }
+
+    @Override
+    public void changePassword(String id, String oldPassword, String newPassword) {
+        // Find user by ID and old password to verify
+        User user = userRepository.findByIdAndPassword(id, oldPassword);
+
+        if (user == null) {
+            throw new RuntimeException("Mật khẩu cũ không chính xác!");
+        }
+
+        // Update password
+        user.setPassword(newPassword);
+        userRepository.update(user);
+    }
 }

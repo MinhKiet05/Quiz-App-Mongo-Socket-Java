@@ -163,6 +163,12 @@ class QuizRequestHandler implements Runnable {
                     SubmissionDTO gradedSub = submissionService.submitQuiz(incomingSub);
                     return Response.builder().success(true).data(gradedSub).message("Nộp bài thành công").build();
                 }
+                case CHANGE_PASSWORD -> {
+                    // Yêu cầu Client gửi mảng String [userId, oldPassword, newPassword]
+                    String[] passwordData = (String[]) request.getObject();
+                    userService.changePassword(passwordData[0], passwordData[1], passwordData[2]);
+                    return Response.builder().success(true).message("Đổi mật khẩu thành công").build();
+                }
                 default -> {
                     return Response.builder().success(false).message("Lệnh không hợp lệ!").build();
                 }

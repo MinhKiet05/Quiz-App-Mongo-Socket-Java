@@ -3,6 +3,7 @@ package iuh.fit.ui.candidate;
 import iuh.fit.dto.QuizDTO;
 import iuh.fit.network.QuizClientService;
 import iuh.fit.ui.login.LoginForm;
+import iuh.fit.ui.profile.ProfileForm;
 import iuh.fit.ui.shared.SessionManager;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -69,6 +70,10 @@ public class CandidateDashboard {
             SessionManager.getInstance().getCurrentUser().getUsername() : ""));
         welcomeLabel.setFont(Font.font("Arial", 14));
         welcomeLabel.setTextFill(Color.WHITE);
+        // Add underline and make it clickable
+        welcomeLabel.setStyle("-fx-text-decoration: underline;");
+        welcomeLabel.setCursor(javafx.scene.Cursor.HAND);
+        welcomeLabel.setOnMouseClicked(e -> ProfileForm.show(primaryStage));
 
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
