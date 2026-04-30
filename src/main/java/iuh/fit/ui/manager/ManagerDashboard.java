@@ -94,11 +94,11 @@ public class ManagerDashboard {
         gridPane.setAlignment(Pos.TOP_CENTER);
 
         VBox featureBox1 = createFeatureBox(" Quản lý thí sinh", "Xem, thêm, sửa, xóa thông tin thí sinh",
-                () -> showInfo("Chức năng này sẽ được phát triển trong phiên bản tiếp theo"));
+                () -> UserManagerForm.show(primaryStage, "CANDIDATE"));
         gridPane.add(featureBox1, 0, 0);
 
         VBox featureBox2 = createFeatureBox(" Quản lý giảng viên", "Xem, thêm, sửa, xóa thông tin giảng viên",
-                () -> showInfo("Chức năng này sẽ được phát triển trong phiên bản tiếp theo"));
+                () -> UserManagerForm.show(primaryStage, "LECTURER"));
         gridPane.add(featureBox2, 1, 0);
 
         VBox featureBox3 = createFeatureBox(" Quản lý môn học", "Xem, thêm, sửa, xóa thông tin môn học",

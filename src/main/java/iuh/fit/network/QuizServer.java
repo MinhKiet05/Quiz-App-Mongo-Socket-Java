@@ -254,6 +254,38 @@ class QuizRequestHandler implements Runnable {
                     subjectService.deleteSubject(subjectId);
                     return Response.builder().success(true).message("Xóa môn học thành công").build();
                 }
+                case GET_ALL_USERS -> {
+                    java.util.List<UserDTO> users = userService.getAllUsers();
+                    return Response.builder().success(true).data(users).message("Tải danh sách người dùng thành công").build();
+                }
+                case SEARCH_USERS -> {
+                    String[] params = (String[]) request.getObject();
+                    String keyword = params != null && params.length > 0 ? params[0] : "";
+                    String role = params != null && params.length > 1 ? params[1] : "ALL";
+                    String status = params != null && params.length > 2 ? params[2] : "ALL";
+                    java.util.List<UserDTO> users = userService.searchUsers(keyword, role, status);
+                    return Response.builder().success(true).data(users).message("Tìm kiếm người dùng thành công").build();
+                }
+                case ADD_USER -> {
+                    UserDTO userDTO = (UserDTO) request.getObject();
+                    userService.addUser(userDTO);
+                    return Response.builder().success(true).message("Thêm người dùng thành công").build();
+                }
+                case UPDATE_USER -> {
+                    UserDTO userDTO = (UserDTO) request.getObject();
+                    userService.updateUser(userDTO);
+                    return Response.builder().success(true).message("Cập nhật người dùng thành công").build();
+                }
+                case DELETE_USER -> {
+                    String userId = (String) request.getObject();
+                    userService.deleteUser(userId);
+                    return Response.builder().success(true).message("Xóa người dùng thành công").build();
+                }
+                case RESET_USER_PASSWORD -> {
+                    String[] payload = (String[]) request.getObject();
+                    userService.resetPassword(payload[0], payload[1]);
+                    return Response.builder().success(true).message("Đặt lại mật khẩu thành công").build();
+                }
 
                 default -> {
                     return Response.builder().success(false).message("Lệnh không hợp lệ!").build();

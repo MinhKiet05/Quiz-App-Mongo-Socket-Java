@@ -21,5 +21,13 @@ public enum CommandType {
     GET_ALL_SUBJECTS,               // Lấy tất cả môn học
     ADD_SUBJECT,                    // Thêm môn học mới
     UPDATE_SUBJECT,                 // Cập nhật môn học
-    DELETE_SUBJECT                  // Xóa môn học theo ID
+    DELETE_SUBJECT,                 // Xóa môn học theo ID
+
+    // Quản lý người dùng (User Management)
+    GET_ALL_USERS,                  // Lấy tất cả người dùng
+    SEARCH_USERS,                   // Tìm kiếm người dùng
+    ADD_USER,                       // Thêm người dùng mới
+    UPDATE_USER,                    // Cập nhật người dùng
+    DELETE_USER,                    // Xóa người dùng
+    RESET_USER_PASSWORD             // Reset mật khẩu người dùng
 }
