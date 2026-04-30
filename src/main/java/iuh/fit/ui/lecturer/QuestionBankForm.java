@@ -590,16 +590,7 @@ private String mapDifficultyToVietnamese(String difficulty) {
         default -> difficulty;
     };
 }
-
-private String mapDifficultyToEnglish(String difficulty) {
-    if (difficulty == null) return "Medium";
-    return switch (difficulty.trim().toLowerCase()) {
-        case "dễ" -> "Easy";
-        case "trung bình" -> "Medium";
-        case "khó" -> "Hard";
-        default -> difficulty;
-    };
-}    private void showInfo(String title, String message) {
+    private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
@@ -638,14 +629,7 @@ private String mapDifficultyToEnglish(String difficulty) {
      * "Medium" → "Trung bình"
      * "Hard" → "Khó"
      */
-    private String mapDifficultyToVietnamese(String englishDifficulty) {
-        if (englishDifficulty == null) return "Trung bình";
-        return switch (englishDifficulty) {
-            case "Easy" -> "Dễ";
-            case "Hard" -> "Khó";
-            default -> "Trung bình";  // Medium
-        };
-    }
+
 
 
     static class SubjectItem {
