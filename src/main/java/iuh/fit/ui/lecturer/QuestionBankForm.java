@@ -581,6 +581,15 @@ public class QuestionBankForm {
         }).start();
     }
 
+private String mapDifficultyToVietnamese(String difficulty) {
+    if (difficulty == null) return "Trung bình";
+    return switch (difficulty.trim().toLowerCase()) {
+        case "easy" -> "Dễ";
+        case "medium" -> "Trung bình";
+        case "hard" -> "Khó";
+        default -> difficulty;
+    };
+}
     private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -620,14 +629,7 @@ public class QuestionBankForm {
      * "Medium" → "Trung bình"
      * "Hard" → "Khó"
      */
-    private String mapDifficultyToVietnamese(String englishDifficulty) {
-        if (englishDifficulty == null) return "Trung bình";
-        return switch (englishDifficulty) {
-            case "Easy" -> "Dễ";
-            case "Hard" -> "Khó";
-            default -> "Trung bình";  // Medium
-        };
-    }
+
 
 
     static class SubjectItem {
