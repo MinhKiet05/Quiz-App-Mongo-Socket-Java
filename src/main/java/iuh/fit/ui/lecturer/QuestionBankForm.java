@@ -16,9 +16,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-
+import javafx.stage.Screen;
+import javafx.geometry.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * QuestionBankForm - Quản lý ngân hàng câu hỏi theo môn học
@@ -47,8 +49,6 @@ public class QuestionBankForm {
         stage = new Stage();
         stage.initOwner(parentStage);
         stage.setTitle("Quản lý ngân hàng câu hỏi");
-        stage.setWidth(1200);
-        stage.setHeight(800);
 
         VBox rootLayout = new VBox(20);
         rootLayout.setPadding(new Insets(20));
@@ -78,8 +78,15 @@ public class QuestionBankForm {
         HBox buttonBox = createButtonBox();
         rootLayout.getChildren().add(buttonBox);
 
-        Scene scene = new Scene(rootLayout);
+        // Full screen setup (like LecturerDashboard)
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        Scene scene = new Scene(rootLayout, bounds.getWidth(), bounds.getHeight());
         stage.setScene(scene);
+        stage.setWidth(bounds.getWidth());
+        stage.setHeight(bounds.getHeight());
+        stage.setX(bounds.getMinX());
+        stage.setY(bounds.getMinY());
         stage.show();
 
         // Load danh sách môn học
@@ -386,9 +393,13 @@ public class QuestionBankForm {
         
         // Lấy createdBy từ SessionManager (ID của người đăng nhập)
         String createdBy = SessionManager.getInstance().getCurrentUser().getId();
+        
+        // Generate ID cho câu hỏi mới
+        String questionId = UUID.randomUUID().toString();
 
         // Build QuestionDTO
         QuestionDTO newQuestion = QuestionDTO.builder()
+                .id(questionId)  // ✅ Set ID ngay từ client
                 .content(contentField.getText())
                 .difficulty(difficultyEnglish)  // ✅ Sử dụng tiếng Anh
                 .options(options)
@@ -398,10 +409,11 @@ public class QuestionBankForm {
                 .build();
 
         System.out.println("[QuestionBank] Adding question: " + newQuestion.getContent());
+        System.out.println("[QuestionBank] ID: " + questionId);
+        System.out.println("[QuestionBank] SubjectId: " + subject.getId());
+        System.out.println("[QuestionBank] CreatedBy: " + createdBy);
         System.out.println("[QuestionBank] Difficulty: " + difficultyEnglish);
         System.out.println("[QuestionBank] CorrectAnswer: " + correctAnswerContent);
-        System.out.println("[QuestionBank] CreatedBy: " + createdBy);
-        System.out.println("[QuestionBank] SubjectId: " + subject.getId());
 
         new Thread(() -> {
             try {
@@ -443,20 +455,33 @@ public class QuestionBankForm {
             return;
         }
 
-        // BẢO TOÀN: Chỉ cập nhật các trường cho phép thay đổi
-        // Giữ lại subjectId và createdBy từ dòng được chọn (selectedQuestion)
-        selectedQuestion.setContent(contentField.getText());
-        selectedQuestion.setDifficulty(difficultyComboBox.getValue());
-        selectedQuestion.setOptions(List.of(
+        // Lấy các option từ form
+        List<String> options = List.of(
             optionAField.getText(),
             optionBField.getText(),
             optionCField.getText(),
             optionDField.getText()
-        ));
-        selectedQuestion.setCorrectAnswer(correctAnswerComboBox.getValue());
+        );
+        
+        // Convert correctAnswer từ "A", "B", "C", "D" sang nội dung thực tế
+        String selectedAnswerKey = correctAnswerComboBox.getValue();
+        int answerIndex = selectedAnswerKey.charAt(0) - 'A';
+        String correctAnswerContent = options.get(answerIndex);
+        
+        // Map difficulty từ Vietnamese sang English
+        String difficultyEnglish = mapDifficultyToEnglish(difficultyComboBox.getValue());
+
+        // BẢO TOÀN: Chỉ cập nhật các trường cho phép thay đổi
+        // Giữ lại subjectId và createdBy từ dòng được chọn (selectedQuestion)
+        selectedQuestion.setContent(contentField.getText());
+        selectedQuestion.setDifficulty(difficultyEnglish);  // ✅ Sử dụng tiếng Anh
+        selectedQuestion.setOptions(options);
+        selectedQuestion.setCorrectAnswer(correctAnswerContent);  // ✅ Sử dụng nội dung thực tế
         // KHÔNG ghi đè subjectId và createdBy - giữ nguyên từ selectedQuestion
 
         System.out.println("[QuestionBank] Updating question: " + selectedQuestion.getId());
+        System.out.println("[QuestionBank] Difficulty: " + difficultyEnglish);
+        System.out.println("[QuestionBank] CorrectAnswer: " + correctAnswerContent);
         System.out.println("[QuestionBank] Preserving subjectId: " + selectedQuestion.getSubjectId());
         System.out.println("[QuestionBank] Preserving createdBy: " + selectedQuestion.getCreatedBy());
 
@@ -588,6 +613,38 @@ private String mapDifficultyToEnglish(String difficulty) {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    // ============ Helper Methods for Data Conversion ============
+
+    /**
+     * Map difficulty từ Vietnamese sang English
+     * "Dễ" → "Easy"
+     * "Trung bình" → "Medium"
+     * "Khó" → "Hard"
+     */
+    private String mapDifficultyToEnglish(String vietnameseDifficulty) {
+        if (vietnameseDifficulty == null) return "Medium";
+        return switch (vietnameseDifficulty) {
+            case "Dễ" -> "Easy";
+            case "Khó" -> "Hard";
+            default -> "Medium";  // Trung bình
+        };
+    }
+
+    /**
+     * Map difficulty từ English sang Vietnamese (ngược lại)
+     * "Easy" → "Dễ"
+     * "Medium" → "Trung bình"
+     * "Hard" → "Khó"
+     */
+    private String mapDifficultyToVietnamese(String englishDifficulty) {
+        if (englishDifficulty == null) return "Trung bình";
+        return switch (englishDifficulty) {
+            case "Easy" -> "Dễ";
+            case "Hard" -> "Khó";
+            default -> "Trung bình";  // Medium
+        };
     }
 
 

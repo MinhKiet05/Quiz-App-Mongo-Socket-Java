@@ -4,16 +4,23 @@ package iuh.fit.network;
 import iuh.fit.dto.QuizDTO;
 import iuh.fit.dto.SubmissionDTO;
 import iuh.fit.dto.UserDTO;
+import iuh.fit.dto.QuestionDTO;
+import iuh.fit.dto.SubjectDTO;
 import iuh.fit.service.IUserService;
 import iuh.fit.repository.impl.QuestionRepositoryImpl;
 import iuh.fit.repository.impl.QuizRepositoryImpl;
 import iuh.fit.repository.impl.SubmissionRepositoryImpl;
 import iuh.fit.repository.impl.UserRepositoryImpl;
+import iuh.fit.repository.impl.SubjectRepositoryImpl;
 import iuh.fit.service.IQuizService;
 import iuh.fit.service.ISubmissionService;
+import iuh.fit.service.IQuestionService;
+import iuh.fit.service.ISubjectService;
 import iuh.fit.service.impl.QuizServiceImpl;
 import iuh.fit.service.impl.SubmissionServiceImpl;
 import iuh.fit.service.impl.UserServiceImpl;
+import iuh.fit.service.impl.QuestionServiceImpl;
+import iuh.fit.service.impl.SubjectServiceImpl;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -72,8 +79,8 @@ class QuizRequestHandler implements Runnable {
     private IUserService userService;
     private IQuizService quizService;
     private ISubmissionService submissionService;
-    private iuh.fit.service.IQuestionService questionService;
-    private iuh.fit.service.ISubjectService subjectService;
+    private IQuestionService questionService;
+    private ISubjectService subjectService;
 
     public QuizRequestHandler(Socket socket) {
         this.socket = socket;
@@ -84,14 +91,14 @@ class QuizRequestHandler implements Runnable {
             QuizRepositoryImpl quizRepo = new QuizRepositoryImpl();
             QuestionRepositoryImpl questionRepo = new QuestionRepositoryImpl();
             SubmissionRepositoryImpl submissionRepo = new SubmissionRepositoryImpl();
-            iuh.fit.repository.impl.SubjectRepositoryImpl subjectRepo = new iuh.fit.repository.impl.SubjectRepositoryImpl();
+            SubjectRepositoryImpl subjectRepo = new SubjectRepositoryImpl();
 
             // Tiêm (Inject) Repository vào Service
             this.userService = new UserServiceImpl(userRepo);
             this.quizService = new QuizServiceImpl(quizRepo, questionRepo);
             this.submissionService = new SubmissionServiceImpl(submissionRepo, this.quizService);
-            this.questionService = new iuh.fit.service.impl.QuestionServiceImpl(questionRepo);
-            this.subjectService = new iuh.fit.service.impl.SubjectServiceImpl(subjectRepo);
+            this.questionService = new QuestionServiceImpl(questionRepo);
+            this.subjectService = new SubjectServiceImpl(subjectRepo);
             
             System.out.println("[Handler] ✓ Services initialized for client: " + socket.getRemoteSocketAddress());
         } catch (Exception e) {
@@ -174,17 +181,23 @@ class QuizRequestHandler implements Runnable {
                     userService.changePassword(passwordData[0], passwordData[1], passwordData[2]);
                     return Response.builder().success(true).message("Đổi mật khẩu thành công").build();
                 }
-                
-                // ============ Quản lý Câu hỏi ============
                 case ADD_QUESTION -> {
                     // Yêu cầu Client gửi QuestionDTO
-                    iuh.fit.dto.QuestionDTO questionDTO = (iuh.fit.dto.QuestionDTO) request.getObject();
+                    QuestionDTO questionDTO = (QuestionDTO) request.getObject();
+                    System.out.println("[Server Handler] === RECEIVED ADD_QUESTION ===" );
+                    System.out.println("[Server Handler] DTO ID: " + questionDTO.getId());
+                    System.out.println("[Server Handler] DTO SubjectId: " + questionDTO.getSubjectId());
+                    System.out.println("[Server Handler] DTO CreatedBy: " + questionDTO.getCreatedBy());
+                    System.out.println("[Server Handler] DTO Content: " + questionDTO.getContent());
+                    System.out.println("[Server Handler] DTO Difficulty: " + questionDTO.getDifficulty());
+                    System.out.println("[Server Handler] DTO CorrectAnswer: " + questionDTO.getCorrectAnswer());
+                    System.out.println("[Server Handler] DTO Options: " + questionDTO.getOptions());
                     questionService.addQuestion(questionDTO);
                     return Response.builder().success(true).message("Thêm câu hỏi thành công").build();
                 }
                 case UPDATE_QUESTION -> {
                     // Yêu cầu Client gửi QuestionDTO
-                    iuh.fit.dto.QuestionDTO questionDTO = (iuh.fit.dto.QuestionDTO) request.getObject();
+                    QuestionDTO questionDTO = (QuestionDTO) request.getObject();
                     questionService.updateQuestion(questionDTO);
                     return Response.builder().success(true).message("Cập nhật câu hỏi thành công").build();
                 }
@@ -197,36 +210,34 @@ class QuizRequestHandler implements Runnable {
                 case GET_QUESTIONS_BY_SUBJECT -> {
                     // Yêu cầu Client gửi subjectId (String)
                     String subjectId = (String) request.getObject();
-                    java.util.List<iuh.fit.dto.QuestionDTO> questions = questionService.findBySubjectId(subjectId);
+                    java.util.List<QuestionDTO> questions = questionService.findBySubjectId(subjectId);
                     return Response.builder().success(true).data(questions).message("Tải danh sách câu hỏi thành công").build();
                 }
                 case SEARCH_QUESTIONS -> {
                     // Yêu cầu Client gửi keyword (String)
                     String keyword = (String) request.getObject();
-                    java.util.List<iuh.fit.dto.QuestionDTO> questions = questionService.searchQuestions(keyword);
+                    java.util.List<QuestionDTO> questions = questionService.searchByContent(keyword);
                     return Response.builder().success(true).data(questions).message("Tìm kiếm câu hỏi thành công").build();
                 }
                 case GET_ALL_QUESTIONS -> {
-                    java.util.List<iuh.fit.dto.QuestionDTO> questions = questionService.getAllQuestions();
+                    java.util.List<QuestionDTO> questions = questionService.getAllQuestions();
                     return Response.builder().success(true).data(questions).message("Tải tất cả câu hỏi thành công").build();
                 }
                 case DELETE_QUESTIONS_BY_SUBJECT -> {
                     // Yêu cầu Client gửi subjectId (String)
                     String subjectId = (String) request.getObject();
-                    questionService.deleteQuestionsBySubject(subjectId);
-                    return Response.builder().success(true).message("Xóa tất cả câu hỏi của môn học thành công").build();
+                    questionService.deleteBySubjectId(subjectId);
+                    return Response.builder().success(true).message("Xóa tất cả câu hỏi của môn thành công").build();
                 }
                 case GET_QUESTION_COUNT_BY_SUBJECT -> {
                     // Yêu cầu Client gửi subjectId (String)
                     String subjectId = (String) request.getObject();
-                    long count = questionService.getQuestionCountBySubject(subjectId);
+                    long count = questionService.countBySubjectId(subjectId);
                     return Response.builder().success(true).data(count).message("Đếm câu hỏi thành công").build();
                 }
-                
-                // ============ Quản lý Môn học ============
                 case GET_ALL_SUBJECTS -> {
-                    java.util.List<iuh.fit.dto.SubjectDTO> subjects = subjectService.getAllSubjects();
-                    return Response.builder().success(true).data(subjects).message("Tải danh sách môn học thành công").build();
+                    java.util.List<SubjectDTO> subjects = subjectService.getAllSubjects();
+                    return Response.builder().success(true).data(subjects).message("Tải tất cả môn học thành công").build();
                 }
                 case ADD_SUBJECT -> {
                     iuh.fit.dto.SubjectDTO subjectDTO = (iuh.fit.dto.SubjectDTO) request.getObject();
