@@ -259,6 +259,52 @@ public class QuizClientService {
         return (List<SubjectDTO>) response.getData();
     }
 
+
+    /**
+     * Thêm môn học mới
+     */
+    public void addSubject(SubjectDTO subjectDTO) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.ADD_SUBJECT)
+                .object(subjectDTO)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    /**
+     * Cập nhật môn học
+     */
+    public void updateSubject(SubjectDTO subjectDTO) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.UPDATE_SUBJECT)
+                .object(subjectDTO)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    /**
+     * Xóa môn học theo ID
+     */
+    public void deleteSubject(String subjectId) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.DELETE_SUBJECT)
+                .object(subjectId)
+                .build();
+
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
     /**
      * Kiểm tra xem đã kết nối hay chưa
      */

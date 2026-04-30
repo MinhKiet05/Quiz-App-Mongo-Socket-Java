@@ -17,6 +17,9 @@ public enum CommandType {
     DELETE_QUESTIONS_BY_SUBJECT,        // Xóa tất cả câu hỏi của một môn học
     GET_QUESTION_COUNT_BY_SUBJECT,      // Đếm số câu hỏi theo môn học
     
-    // ============ Quản lý Môn học ============
-    GET_ALL_SUBJECTS                    // Lấy tất cả môn học
+    // Quản lý môn học (Subject Management)
+    GET_ALL_SUBJECTS,               // Lấy tất cả môn học
+    ADD_SUBJECT,                    // Thêm môn học mới
+    UPDATE_SUBJECT,                 // Cập nhật môn học
+    DELETE_SUBJECT                  // Xóa môn học theo ID
 }

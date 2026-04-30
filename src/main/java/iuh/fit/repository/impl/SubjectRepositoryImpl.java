@@ -26,7 +26,21 @@ public class SubjectRepositoryImpl implements ISubjectRepository {
 
     @Override
     public Subject findById(String id) {
-        // Lấy chi tiết một môn học theo ID
         return collection.find(Filters.eq("_id", id)).first();
+    }
+
+    @Override
+    public void add(Subject subject) {
+        collection.insertOne(subject);
+    }
+
+    @Override
+    public void update(Subject subject) {
+        collection.replaceOne(Filters.eq("_id", subject.getId()), subject);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        collection.deleteOne(Filters.eq("_id", id));
     }
 }

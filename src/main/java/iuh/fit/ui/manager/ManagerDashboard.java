@@ -93,20 +93,23 @@ public class ManagerDashboard {
         gridPane.setVgap(20);
         gridPane.setAlignment(Pos.TOP_CENTER);
 
-        VBox featureBox1 = createFeatureBox("👥 Quản lý thí sinh", "Xem, thêm, sửa, xóa thông tin thí sinh");
+        VBox featureBox1 = createFeatureBox(" Quản lý thí sinh", "Xem, thêm, sửa, xóa thông tin thí sinh",
+                () -> showInfo("Chức năng này sẽ được phát triển trong phiên bản tiếp theo"));
         gridPane.add(featureBox1, 0, 0);
 
-        VBox featureBox2 = createFeatureBox("👨‍🏫 Quản lý giảng viên", "Xem, thêm, sửa, xóa thông tin giảng viên");
+        VBox featureBox2 = createFeatureBox(" Quản lý giảng viên", "Xem, thêm, sửa, xóa thông tin giảng viên",
+                () -> showInfo("Chức năng này sẽ được phát triển trong phiên bản tiếp theo"));
         gridPane.add(featureBox2, 1, 0);
 
-        VBox featureBox3 = createFeatureBox("📖 Quản lý môn học", "Xem, thêm, sửa, xóa thông tin môn học");
+        VBox featureBox3 = createFeatureBox(" Quản lý môn học", "Xem, thêm, sửa, xóa thông tin môn học",
+                () -> SubjectManagerForm.show(primaryStage));
         gridPane.add(featureBox3, 0, 1);
 
         centerLayout.getChildren().addAll(titleLabel, gridPane);
         return centerLayout;
     }
 
-    private VBox createFeatureBox(String title, String description) {
+    private VBox createFeatureBox(String title, String description, Runnable action) {
         VBox box = new VBox(15);
         box.setStyle("-fx-border-color: #e0e0e0; -fx-border-radius: 8; -fx-padding: 20; -fx-background-color: white;");
         box.setPrefSize(300, 180);
@@ -124,7 +127,7 @@ public class ManagerDashboard {
         Button actionButton = new Button("Truy cập");
         actionButton.setStyle("-fx-font-size: 12; -fx-padding: 10 20; -fx-background-color: #667eea; -fx-text-fill: white; -fx-border-radius: 5;");
         actionButton.setFont(Font.font("Arial", FontWeight.BOLD, 12));
-        actionButton.setOnAction(e -> showInfo("Chức năng này sẽ được phát triển trong phiên bản tiếp theo"));
+        actionButton.setOnAction(e -> action.run());
 
         box.getChildren().addAll(titleLabel, descLabel, actionButton);
         return box;
