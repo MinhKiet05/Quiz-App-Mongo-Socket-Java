@@ -305,6 +305,76 @@ public class QuizClientService {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public List<UserDTO> getAllUsers() throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.GET_ALL_USERS)
+                .object(null)
+                .build();
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (List<UserDTO>) response.getData();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<UserDTO> searchUsers(String keyword, String role, String status) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.SEARCH_USERS)
+                .object(new String[]{keyword, role, status})
+                .build();
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+        return (List<UserDTO>) response.getData();
+    }
+
+    public void addUser(UserDTO userDTO) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.ADD_USER)
+                .object(userDTO)
+                .build();
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    public void updateUser(UserDTO userDTO) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.UPDATE_USER)
+                .object(userDTO)
+                .build();
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    public void deleteUser(String userId) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.DELETE_USER)
+                .object(userId)
+                .build();
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
+    public void resetUserPassword(String userId, String newPassword) throws Exception {
+        Request request = Request.builder()
+                .commandType(CommandType.RESET_USER_PASSWORD)
+                .object(new String[]{userId, newPassword})
+                .build();
+        Response response = sendRequest(request);
+        if (!response.isSuccess()) {
+            throw new RuntimeException(response.getMessage());
+        }
+    }
+
     /**
      * Kiểm tra xem đã kết nối hay chưa
      */
